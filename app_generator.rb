@@ -1,4 +1,5 @@
 require 'open3'
+require './gem_handler.rb'
 
 def generateApp(recipe)
 	version = recipe["generate"][0]
@@ -13,4 +14,12 @@ def generateApp(recipe)
 			exit
 		end
 	}
+
+	recipe["AND"].each do |gem_name,options|
+		if(gem_name[0] =~ /^[A-Z]/) #it's a category
+			gem_name = chooseGem(gem_name)
+		end
+
+		installGem(gem_name,options)
+	end
 end
