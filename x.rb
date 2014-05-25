@@ -1,7 +1,8 @@
 require('./parser.rb')
+require ('./app_generator.rb')
 
 if ARGV.length > 1
-	puts "Argument count > 1"
+	puts "Too many arguments"
 	exit
 end
 
@@ -43,3 +44,5 @@ line = content[0].split(" ")
 parsed_line = parseLine(line,keywords)
 
 puts parsed_line
+
+generateApp(parsed_line)
