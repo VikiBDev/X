@@ -3,6 +3,11 @@ if ARGV.length > 1
 	exit
 end
 
+if ARGV.length == 0
+	puts "Missing recipe file"
+	exit
+end
+
 case ARGV[0]
 when '-h' || '--help'
 	puts "Usage ./x.rb recipe_file.rb"
@@ -34,28 +39,31 @@ keywords = ["generate","AND","with"]
 line = content[0].split(" ")
 
 parsed_line = Hash.new
-keywords.each do |key|
-	parsed_line[key] = Array.new
-end
+
+parsed_line["AND"] = Hash.new
+parsed_line["generate"] = Array.new
 
 current_keyword = ""
+gem_count = -1
 last_gem = ""
-with_array_length = -1
 
 line.each do |word|
 	if(keywords.include?(word))
 		current_keyword = word
-		if (current_keyword == "with")
-			with_array_length+=1
-			parsed_line[current_keyword][with_array_length] = Array.new
+		if(current_keyword == "AND")
+			gem_count += 1
 		end
 	elsif word == "including"
 		current_keyword = "AND"
+		gem_count += 1
 	else
-		if current_keyword != "with"
-			parsed_line[current_keyword].push(word)
+		if current_keyword == "AND"
+			parsed_line["AND"][word] = Array.new
+			last_gem = word
+		elsif(current_keyword == "with")
+			parsed_line["AND"][last_gem].push(word)
 		else
-			parsed_line[current_keyword][with_array_length].push(word)
+			parsed_line[current_keyword].push(word)
 		end
 	end
 end
