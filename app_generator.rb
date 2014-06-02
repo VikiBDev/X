@@ -20,6 +20,6 @@ def generateApp(recipe)
 			gem_name = chooseGem(gem_name)
 		end
 
-		installGem(gem_name,options)
+		installGem(gem_name,options,app_name)
 	end
 end

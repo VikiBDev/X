@@ -1,11 +1,8 @@
   homepage 'https://github.com/plataformatec/devise'
   category 'authentication'
-  gem 'devise'
   version '3.2.4'
 
   def install
-	
-    add_gemfile gem,version
 	
 	system "bundle install"
 	
