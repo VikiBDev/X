@@ -1,3 +1,5 @@
+require 'open3'
+
 def installGem(gem_name,options,app_name)
 	file_path = Dir.pwd+"/Recipes/"+gem_name+".rb"
 
@@ -23,7 +25,20 @@ def installGem(gem_name,options,app_name)
 
 	parsed_recipe = parseRecipe(content,keywords)
 
-	puts parsed_recipe
+	puts "Installing "+gem_name+" "+parsed_recipe["version"]+"..."
+	puts "More info: "+parsed_recipe["homepage"]
+
+	Dir.chdir app_name
+
+	parsed_recipe["system"].each do |element|
+		if element["restrictions"].nil?
+			executeCommand(element["command"])
+		elsif options.include? element["restrictions"]
+			executeCommand(element["command"])
+		end
+	end
+
+	Dir.chdir "../"
 
 end
 
@@ -40,4 +55,16 @@ def chooseGem(category)
 		 puts "Category "+category+" doesn't exist"
 		 exit
 	end
+end
+
+def executeCommand(command)
+	Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
+		
+		if(wait_thr.value.exitstatus != 0)
+			stderr.each do |line|
+				p line
+			end
+			exit
+		end
+	}
 end
