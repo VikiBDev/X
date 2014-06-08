@@ -35,21 +35,20 @@ def installGem(gem_name,options,app_name)
 		file.puts string
 	end
 
-	puts parsed_recipe
 	puts "Installing "+gem_name+" "+parsed_recipe["version"]+"..."
 	puts "More info: "+parsed_recipe["homepage"]
 
-	Dir.chdir app_name
+	Dir.chdir app_name do
 
-	parsed_recipe["system"].each do |element|
-		if element["only"].nil?
-			executeCommand(element["command"])
-		elsif options.include? element["only"]
-			executeCommand(element["command"])
+		parsed_recipe["system"].each do |element|
+			if element["only"].nil?
+				executeCommand(element["command"])
+			elsif options.include? element["only"]
+				executeCommand(element["command"])
+			end
 		end
-	end
 
-	Dir.chdir "../"
+	end
 
 end
 
@@ -69,8 +68,14 @@ def chooseGem(category)
 end
 
 def executeCommand(command)
-	if(system(command))
-		puts "error"
-		exit
-	end
+	Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
+		
+		if(wait_thr.value.exitstatus != 0)
+			stderr.each do |line|
+				p line
+			end
+			exit
+		end
+	}
+
 end
