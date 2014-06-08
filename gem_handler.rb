@@ -25,15 +25,26 @@ def installGem(gem_name,options,app_name)
 
 	parsed_recipe = parseRecipe(content,keywords)
 
+	# adding gem to gemfile
+	File.open(Dir.pwd+"/"+app_name+"/Gemfile","a") do |file|
+		file.puts "#gem added by X"
+		string = "gem \"#{gem_name}\""
+		unless parsed_recipe["version"].nil?
+			string += ", #{parsed_recipe["version"]}"
+		end
+		file.puts string
+	end
+
+	puts parsed_recipe
 	puts "Installing "+gem_name+" "+parsed_recipe["version"]+"..."
 	puts "More info: "+parsed_recipe["homepage"]
 
 	Dir.chdir app_name
 
 	parsed_recipe["system"].each do |element|
-		if element["restrictions"].nil?
+		if element["only"].nil?
 			executeCommand(element["command"])
-		elsif options.include? element["restrictions"]
+		elsif options.include? element["only"]
 			executeCommand(element["command"])
 		end
 	end
@@ -58,13 +69,8 @@ def chooseGem(category)
 end
 
 def executeCommand(command)
-	Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
-		
-		if(wait_thr.value.exitstatus != 0)
-			stderr.each do |line|
-				p line
-			end
-			exit
-		end
-	}
+	if(system(command))
+		puts "error"
+		exit
+	end
 end
