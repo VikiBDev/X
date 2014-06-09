@@ -18,7 +18,9 @@ def parseLine(line,keywords)
 				parsed_line["AND"][word] = Array.new
 				last_gem = word
 			elsif(current_keyword == "with")
-				parsed_line["AND"][last_gem].push(word)
+				word.split(",").each do |condition|
+					parsed_line["AND"][last_gem].push(condition)
+				end
 			else
 				parsed_line[current_keyword].push(word)
 			end

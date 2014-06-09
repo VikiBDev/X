@@ -43,7 +43,7 @@ def installGem(gem_name,options,app_name)
 		parsed_recipe["system"].each do |element|
 			if element["only"].nil?
 				executeCommand(element["command"])
-			elsif options.include? element["only"]
+			elsif options.include? (element["only"])
 				executeCommand(element["command"])
 			end
 		end
@@ -71,6 +71,10 @@ def executeCommand(command)
 	p command.rstrip.lstrip.gsub(/"/,'')
 	Open3.popen3(command.rstrip.lstrip.gsub(/\"/,'')) {|stdin, stdout, stderr, wait_thr|
 		
+		stdout.each do |line|
+			p line
+		end
+
 		if(wait_thr.value.exitstatus != 0)
 			stderr.each do |line|
 				p line
