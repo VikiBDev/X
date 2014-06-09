@@ -68,7 +68,8 @@ def chooseGem(category)
 end
 
 def executeCommand(command)
-	Open3.popen3(command) {|stdin, stdout, stderr, wait_thr|
+	p command.rstrip.lstrip.gsub(/"/,'')
+	Open3.popen3(command.rstrip.lstrip.gsub(/\"/,'')) {|stdin, stdout, stderr, wait_thr|
 		
 		if(wait_thr.value.exitstatus != 0)
 			stderr.each do |line|
